@@ -1,16 +1,35 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
+
+// Throttle function to optimize performance
+function throttle<T extends (...args: any[]) => any>(func: T, limit: number): T {
+  let inThrottle: boolean
+  return function (this: any, ...args: Parameters<T>) {
+    if (!inThrottle) {
+      func.apply(this, args)
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
+    }
+  } as T
+}
 
 export default function CursorEffect() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
+  const rafRef = useRef<number>()
 
   useEffect(() => {
-    const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
+    // Use requestAnimationFrame for smoother updates
+    const updateMousePosition = throttle((e: MouseEvent) => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
+      rafRef.current = requestAnimationFrame(() => {
+        setMousePosition({ x: e.clientX, y: e.clientY })
+      })
+    }, 16) // ~60fps
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement
@@ -39,14 +58,17 @@ export default function CursorEffect() {
       setIsHovering(false)
     }
 
-    window.addEventListener("mousemove", updateMousePosition)
-    document.addEventListener("mouseover", handleMouseOver)
-    document.addEventListener("mouseout", handleMouseOut)
+    window.addEventListener("mousemove", updateMousePosition, { passive: true })
+    document.addEventListener("mouseover", handleMouseOver, { passive: true })
+    document.addEventListener("mouseout", handleMouseOut, { passive: true })
 
     return () => {
       window.removeEventListener("mousemove", updateMousePosition)
       document.removeEventListener("mouseover", handleMouseOver)
       document.removeEventListener("mouseout", handleMouseOut)
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
     }
   }, [])
 

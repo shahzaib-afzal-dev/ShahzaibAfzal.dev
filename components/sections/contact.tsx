@@ -5,6 +5,14 @@ import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
 import { useRef, useState } from "react"
 import { Mail, MapPin, Send, Github, Linkedin, MessageCircle, Clock } from "lucide-react"
+import { createClient } from "@supabase/supabase-js"
+import { toast } from "sonner"
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default function Contact() {
   const ref = useRef(null)
@@ -21,14 +29,37 @@ export default function Contact() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // Insert data into Supabase
+      const { data, error } = await supabase.from("contact_messages").insert([
+        {
+          full_name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        },
+      ])
 
-    console.log("Form submitted:", formData)
-    setIsSubmitting(false)
+      if (error) {
+        throw error
+      }
 
-    // Reset form
-    setFormData({ name: "", email: "", subject: "", message: "" })
+      // Success message
+      toast.success("Message sent successfully!", {
+        description: "Thank you for reaching out. I'll get back to you soon.",
+      })
+
+      // Reset form
+      setFormData({ name: "", email: "", subject: "", message: "" })
+    } catch (error: any) {
+      // Error message
+      console.error("Error submitting form:", error)
+      toast.error("Failed to send message", {
+        description: error.message || "Please try again later.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -66,8 +97,8 @@ export default function Contact() {
   ]
 
   const socialLinks = [
-    { icon: Github, href: "#", label: "GitHub", color: "hover:bg-gray-600" },
-    { icon: Linkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-600" },
+    { icon: Github, href: "https://github.com/shahzaib-afzal-dev", label: "GitHub", color: "hover:bg-gray-600" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/shahzaib-afzal-dev", label: "LinkedIn", color: "hover:bg-blue-600" },
     { icon: MessageCircle, href: "#", label: "Discord", color: "hover:bg-indigo-600" },
   ]
 
@@ -146,6 +177,8 @@ export default function Contact() {
                   <motion.a
                     key={social.label}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.3, delay: 0.8 + index * 0.1 }}
@@ -271,7 +304,7 @@ export default function Contact() {
         className="mt-20 pt-8 border-t border-gray-700/30 text-center"
       >
         <div className="flex flex-col sm:flex-row items-center justify-between max-w-7xl mx-auto px-6 lg:px-8">
-          <p className="text-gray-400 mb-4 sm:mb-0">© 2024 Shahzaib Afzal. All rights reserved.</p>
+          <p className="text-gray-400 mb-4 sm:mb-0">© 2025 Shahzaib Afzal. All rights reserved.</p>
           <p className="text-gray-500 text-sm">Built with Next.js, Tailwind CSS & Framer Motion</p>
         </div>
       </motion.div>

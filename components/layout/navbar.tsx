@@ -25,6 +25,14 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const handleGetInTouch = () => {
+    const contactSection = document.getElementById('contact')
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    setIsOpen(false)
+  }
+
   return (
     <motion.nav
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
@@ -75,6 +83,7 @@ export default function Navbar() {
           {/* CTA Button */}
           <div className="hidden md:block">
             <motion.button
+              onClick={handleGetInTouch}
               className="relative px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl font-medium overflow-hidden group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -121,7 +130,10 @@ export default function Navbar() {
                 {item.name}
               </a>
             ))}
-            <button className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl font-medium">
+            <button
+              onClick={handleGetInTouch}
+              className="w-full mt-4 px-6 py-3 bg-gradient-to-r from-purple-600 to-violet-600 text-white rounded-xl font-medium"
+            >
               Get In Touch
             </button>
           </div>

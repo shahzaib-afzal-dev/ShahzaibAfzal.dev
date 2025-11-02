@@ -2,8 +2,16 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { Toaster } from "sonner"
+import { WebVitals } from "./web-vitals"
 
-const inter = Inter({ subsets: ["latin"] })
+// Optimize font loading with display swap and preload
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+  preload: true,
+  variable: '--font-inter',
+})
 
 export const metadata: Metadata = {
   title: "Shahzaib Afzal - Full Stack Developer",
@@ -26,7 +34,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} antialiased`}>{children}</body>
+      <body className={`${inter.className} antialiased`}>
+        <WebVitals />
+        {children}
+        <Toaster position="top-right" richColors />
+      </body>
     </html>
   )
 }

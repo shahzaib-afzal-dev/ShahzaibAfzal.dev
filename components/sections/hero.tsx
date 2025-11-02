@@ -1,8 +1,18 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { ArrowDown, Github, Linkedin, Mail, Download } from "lucide-react"
-import RealisticGlobe from "@/components/ui/realistic-globe"
+
+// Lazy load the heavy globe component
+const RealisticGlobe = dynamic(() => import("@/components/ui/realistic-globe"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-96 h-96 flex items-center justify-center">
+      <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-violet-600 rounded-full animate-pulse" />
+    </div>
+  ),
+})
 
 export default function Hero() {
   return (
@@ -52,9 +62,9 @@ export default function Hero() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="mb-6"
             >
-              <span className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600/20 to-violet-600/20 border border-purple-500/30 rounded-full text-purple-300 text-sm font-medium mb-6">
+              {/* <span className="inline-block px-4 py-2 bg-gradient-to-r from-purple-600/20 to-violet-600/20 border border-purple-500/30 rounded-full text-purple-300 text-sm font-medium mb-6">
                 👋 Welcome to my portfolio
-              </span>
+              </span> */}
             </motion.div>
 
             <motion.h1
@@ -92,7 +102,7 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1 }}
             >
-              Crafting innovative digital solutions with 2+ years of expertise in modern web technologies. Transforming
+              Crafting innovative digital solutions with 3+ years of expertise in modern web technologies. Transforming
               ideas into scalable, high-performance applications.
             </motion.p>
 
@@ -137,12 +147,14 @@ export default function Hero() {
             >
               {[
                 { icon: Mail, href: "mailto:safzal.web@gmail.com", label: "Email" },
-                { icon: Github, href: "#", label: "GitHub" },
-                { icon: Linkedin, href: "#", label: "LinkedIn" },
+                { icon: Github, href: "https://github.com/shahzaib-afzal-dev", label: "GitHub" },
+                { icon: Linkedin, href: "https://www.linkedin.com/in/shahzaib-afzal-dev", label: "LinkedIn" },
               ].map((social, index) => (
                 <motion.a
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group relative p-3 bg-gray-800/50 hover:bg-purple-600/20 rounded-xl border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.9 }}

@@ -1,38 +1,67 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { useState, useEffect } from "react"
+import { motion, useReducedMotion } from "framer-motion"
+import { useState, useEffect, useMemo } from "react"
+import { 
+  SiReact, 
+  SiNodedotjs, 
+  SiMongodb, 
+  SiAmazon, 
+  SiDocker, 
+  SiGraphql, 
+  SiTypescript, 
+  SiNextdotjs, 
+  SiPostgresql, 
+  SiRedis 
+} from "react-icons/si"
+import type { IconType } from "react-icons"
 
 const skills = [
-  { name: "React", position: { x: 25, y: 20, z: 0.8 }, color: "#61DAFB" },
-  { name: "Node.js", position: { x: 75, y: 30, z: 0.6 }, color: "#339933" },
-  { name: "MongoDB", position: { x: 20, y: 60, z: 0.9 }, color: "#47A248" },
-  { name: "AWS", position: { x: 80, y: 70, z: 0.7 }, color: "#FF9900" },
-  { name: "Docker", position: { x: 45, y: 15, z: 0.5 }, color: "#2496ED" },
-  { name: "GraphQL", position: { x: 15, y: 80, z: 0.8 }, color: "#E10098" },
-  { name: "TypeScript", position: { x: 85, y: 45, z: 0.6 }, color: "#3178C6" },
-  { name: "Next.js", position: { x: 10, y: 40, z: 0.9 }, color: "#000000" },
-  { name: "PostgreSQL", position: { x: 70, y: 85, z: 0.7 }, color: "#336791" },
-  { name: "Redis", position: { x: 90, y: 25, z: 0.5 }, color: "#DC382D" },
+  { name: "React", icon: SiReact, position: { x: 25, y: 20, z: 0.8 }, color: "#61DAFB" },
+  { name: "Node.js", icon: SiNodedotjs, position: { x: 75, y: 30, z: 0.6 }, color: "#339933" },
+  { name: "MongoDB", icon: SiMongodb, position: { x: 20, y: 60, z: 0.9 }, color: "#47A248" },
+  { name: "AWS", icon: SiAmazon, position: { x: 80, y: 70, z: 0.7 }, color: "#FF9900" },
+  { name: "Docker", icon: SiDocker, position: { x: 45, y: 15, z: 0.5 }, color: "#2496ED" },
+  { name: "GraphQL", icon: SiGraphql, position: { x: 15, y: 80, z: 0.8 }, color: "#E10098" },
+  { name: "TypeScript", icon: SiTypescript, position: { x: 85, y: 45, z: 0.6 }, color: "#3178C6" },
+  { name: "Next.js", icon: SiNextdotjs, position: { x: 10, y: 40, z: 0.9 }, color: "#FFFFFF" },
+  { name: "PostgreSQL", icon: SiPostgresql, position: { x: 70, y: 85, z: 0.7 }, color: "#336791" },
+  { name: "Redis", icon: SiRedis, position: { x: 90, y: 25, z: 0.5 }, color: "#DC382D" },
 ]
 
 export default function RealisticGlobe() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [rotation, setRotation] = useState({ x: 0, y: 0 })
+  const shouldReduceMotion = useReducedMotion()
 
+  // Throttle mouse updates for better performance
   useEffect(() => {
+    let rafId: number
+    let lastUpdate = 0
+    const throttleMs = 50 // Update at most every 50ms
+
     const handleMouseMove = (e: MouseEvent) => {
+      const now = Date.now()
+      if (now - lastUpdate < throttleMs) return
+      
       const rect = document.getElementById("globe-container")?.getBoundingClientRect()
       if (rect) {
-        const x = (e.clientX - rect.left - rect.width / 2) / rect.width
-        const y = (e.clientY - rect.top - rect.height / 2) / rect.height
-        setMousePosition({ x, y })
-        setRotation({ x: y * 20, y: x * 20 })
+        cancelAnimationFrame(rafId)
+        rafId = requestAnimationFrame(() => {
+          const x = (e.clientX - rect.left - rect.width / 2) / rect.width
+          const y = (e.clientY - rect.top - rect.height / 2) / rect.height
+          setMousePosition({ x, y })
+          setRotation({ x: y * 20, y: x * 20 })
+          lastUpdate = now
+        })
       }
     }
 
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
+    window.addEventListener("mousemove", handleMouseMove, { passive: true })
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove)
+      cancelAnimationFrame(rafId)
+    }
   }, [])
 
   return (
@@ -153,7 +182,7 @@ export default function RealisticGlobe() {
                     boxShadow: `0 0 20px ${skill.color}40, inset 0 0 20px ${skill.color}20`,
                   }}
                 >
-                  <span className="text-white text-xs font-bold">{skill.name.slice(0, 2).toUpperCase()}</span>
+                  <skill.icon size={24} style={{ color: skill.color }} />
                 </div>
 
                 {/* Glow effect */}
@@ -218,8 +247,8 @@ export default function RealisticGlobe() {
           <div className="absolute top-2 left-2 w-4 h-4 bg-white/30 rounded-full blur-sm" />
         </motion.div>
 
-        {/* Orbiting particles */}
-        {[...Array(8)].map((_, i) => (
+        {/* Orbiting particles - Reduced for performance */}
+        {!shouldReduceMotion && [...Array(4)].map((_, i) => (
           <motion.div
             key={`particle-${i}`}
             className="absolute w-1 h-1 bg-purple-400 rounded-full"

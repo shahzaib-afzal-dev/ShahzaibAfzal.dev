@@ -51,7 +51,7 @@ export default function About() {
                         <span className="text-4xl font-bold text-white">SA</span>
                       </div>
                       <h3 className="text-xl font-semibold text-white mb-2">Shahzaib Afzal</h3>
-                      <p className="text-purple-400">Software Engineer</p>
+                      <p className="text-purple-400">Full Stack Developer</p>
                     </div>
                   </div>
                 </div>
@@ -91,7 +91,7 @@ export default function About() {
           >
             <div className="space-y-4">
               <p className="text-gray-300 text-lg leading-relaxed">
-                Software Engineer with over two+ years of experience, seeking a full-time role to tackle complex
+                Full Stack Developer with over two+ years of experience, seeking a full-time role to tackle complex
                 challenges. I specialize in leveraging technical expertise, strong interpersonal abilities, and creative
                 problem-solving to deliver innovative solutions.
               </p>
@@ -116,7 +116,7 @@ export default function About() {
                   <h4 className="text-white font-semibold">Location</h4>
                 </div>
                 <p className="text-gray-300">Doha, Qatar</p>
-                {/* <p className="text-sm text-purple-400">Relocating to Qatar</p> */}
+                <p className="text-sm text-purple-400">+97474720583</p>
               </motion.div>
 
               <motion.div
